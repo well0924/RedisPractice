@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="kor">
+<head>
+    <meta charset="UTF-8">
+    <title>redis pub/sub test</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container" id="app">
+        <div class="row">
+            <div class="col-md-12">
+                <h3>채팅방 리스트</h3>
+            </div>
+        </div>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <label class="input-group-text">방제목</label>
+            </div>
+            <input type="text" class="form-control" id="room_name" />
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="button" id="createRoom">채팅방 개설</button>
+            </div>
+        </div>
+        <ul class="list-group" id="chatrooms">
+        </ul>
+    </div>
+    <!-- JavaScript -->
+    <script
+            src="https://code.jquery.com/jquery-3.5.1.js"
+            integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@0.17.1/dist/axios.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var chatroomsList = $("#chatrooms");
+            var roomNameInput = $("#room_name");
+
+            function findAllRoom() {
+                axios.get('/chat/rooms').then(function (response) {
+                    chatroomsList.empty();
+                    $.each(response.data, function (index, item) {
+                        chatroomsList.append('<li class="list-group-item list-group-item-action" data-room-id="' + item.roomId + '">' + item.name + '</li>');
+                    });
+                });
+            }
+
+            findAllRoom(); // Initial load
+
+            $("#createRoom").click(function () {
+                var roomName = roomNameInput.val();
+                if (roomName === "") {
+                    alert("방 제목을 입력해 주십시요.");
+
+                } else {
+                    var params = {name: roomName};
+                    console.log(params);
+                    axios.post('/chat/room?name='+roomName, params)
+                        .then(function (response) {
+                            alert(response.data.name + "방 개설에 성공하였습니다.");
+                            roomNameInput.val('');
+                            findAllRoom();
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                            alert("채팅방 개설에 실패하였습니다.");
+                        });
+                }
+            });
+
+            chatroomsList.on("click", "li", function () {
+                var roomId = $(this).data("room-id");
+                var sender = prompt('대화명을 입력해 주세요.');
+                if (sender !== "") {
+                    localStorage.setItem('wschat.sender', sender);
+                    localStorage.setItem('wschat.roomId', roomId);
+                    location.href = "/chat/room/enter/" + roomId;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
