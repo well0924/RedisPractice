@@ -4,6 +4,7 @@ import com.example.redispractice.message.RedisSubScribe;
 import com.example.redispractice.vo.ChatRoom;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -15,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Log4j2
 @Repository
 @RequiredArgsConstructor
 public class ChatRoomRepository {
@@ -49,6 +51,8 @@ public class ChatRoomRepository {
      */
     public ChatRoom createChatRoom(String name) {
         ChatRoom chatRoom = ChatRoom.create(name);
+        log.info(chatRoom.getName());
+        log.info(chatRoom.getRoomId());
         opsHashChatRoom.put(CHAT_ROOMS, chatRoom.getRoomId(), chatRoom);
         return chatRoom;
     }
@@ -59,6 +63,7 @@ public class ChatRoomRepository {
     public void enterChatRoom(String roomId) {
         ChannelTopic topic = topics.get(roomId);
         if (topic == null)
+            log.info(topic);
             topic = new ChannelTopic(roomId);
         redisMessageListener.addMessageListener(redisSubscriber, topic);
         topics.put(roomId, topic);

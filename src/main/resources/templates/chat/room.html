@@ -33,12 +33,15 @@
     <script>
         $(document).ready(function () {
             var chatroomsList = $("#chatrooms");
+            console.log(chatroomsList);
             var roomNameInput = $("#room_name");
+            console.log(roomNameInput);
 
             function findAllRoom() {
                 axios.get('/chat/rooms').then(function (response) {
                     chatroomsList.empty();
                     $.each(response.data, function (index, item) {
+                        console.log(response.data);
                         chatroomsList.append('<li class="list-group-item list-group-item-action" data-room-id="' + item.roomId + '">' + item.name + '</li>');
                     });
                 });
@@ -54,8 +57,10 @@
                 } else {
                     var params = {name: roomName};
                     console.log(params);
-                    axios.post('/chat/room?name='+roomName, params)
+                    axios.post('/chat/room?name='+roomName, params,{
+                    })
                         .then(function (response) {
+                            console.log(response);
                             alert(response.data.name + "방 개설에 성공하였습니다.");
                             roomNameInput.val('');
                             findAllRoom();

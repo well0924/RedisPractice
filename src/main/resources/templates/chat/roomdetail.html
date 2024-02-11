@@ -23,38 +23,39 @@
     <div></div>
 </div>
 <!-- JavaScript -->
-<script
-        src="https://code.jquery.com/jquery-3.5.1.js"
-        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc="
-        crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios@0.17.1/dist/axios.min.js"></script>
 <script src="/webjars/sockjs-client/1.1.2/sockjs.min.js"></script>
 <script src="/webjars/stomp-websocket/2.3.3-1/stomp.min.js"></script>
 <script>
     $(document).ready(function () {
-        //alert(document.title);
         // websocket & stomp initialize
-        var sock = new SockJS("/ws-stomp");
-        var ws = Stomp.over(sock);
-        var reconnect = 0;
-
-        var roomId = localStorage.getItem('wschat.roomId');
-        var sender = localStorage.getItem('wschat.sender');
-
+        let sock = new SockJS("/ws-stomp");
+        let ws = Stomp.over(sock);
+        let reconnect = 0;
+        console.log(sock);
+        console.log(ws);
+        let roomId = localStorage.getItem('wschat.roomId');
+        let sender = localStorage.getItem('wschat.sender');
+        console.log(sender);
+        console.log(roomId);
         // jQuery equivalent to Vue.js data
-        var room = {};
-        var messageInput = $("#messageInput");
-        var messagesList = $("#messagesList");
-
+        let room = {};
+        let messageInput = $("#messageInput");
+        let messagesList = $("#messagesList");
+        console.log(messageInput);
+        console.log(room);
         function findRoom() {
             axios.get('/chat/room/' + roomId).then(function (response) {
+                console.log(response.data.name);
                 room = response.data;
+                console.log(room);
                 $("#roomName").text(room.name);
             });
         }
 
         function sendMessage() {
-            var message = messageInput.val();
+            const message = messageInput.val();
             ws.send("/pub/chat/message", {}, JSON.stringify({
                 type: 'TALK',
                 roomId: roomId,
@@ -73,6 +74,7 @@
             ws.connect({}, function (frame) {
                 ws.subscribe("/sub/chat/room/" + roomId, function (message) {
                     var recv = JSON.parse(message.body);
+                    console.log(recv);
                     recvMessage(recv);
                 });
                 ws.send("/pub/chat/message", {}, JSON.stringify({type: 'ENTER', roomId: roomId, sender: sender}));

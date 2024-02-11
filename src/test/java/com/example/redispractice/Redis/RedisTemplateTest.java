@@ -26,7 +26,7 @@ public class RedisTemplateTest {
     public void redisStringTest(){
         //given
         Address address = new Address("서울특별시 강북구 수유2동 수유벽산아파트 7동 806호");
-        Person person = new Person("hi","go","fu",address);
+        Person person = new Person("hi","go","fu",1L,address);
         ValueOperations<String,Person>stringPersonValueOperations = redisTemplate.opsForValue();
 
         //when
@@ -44,9 +44,9 @@ public class RedisTemplateTest {
     public void redisListTest(){
         ListOperations<String,Person>listOperations = redisTemplate.opsForList();
 
-        listOperations.rightPush("redisPersonList",new Person("ho","fu","hogae",new Address("to")));
+        listOperations.rightPush("redisPersonList",new Person("ho","fu","hogae",1L,new Address("to")));
         
-        listOperations.rightPush("redisPersonList",new Person("ho1","fu","fugo",new Address("to1")));
+        listOperations.rightPush("redisPersonList",new Person("ho1","fu","fugo",1L,new Address("to1")));
 
         Long size = listOperations.size("redisPersonList");
 
@@ -67,9 +67,9 @@ public class RedisTemplateTest {
     public void redisSetTest(){
         SetOperations<String,Person>setOperations = redisTemplate.opsForSet();
 
-        setOperations.add("set",new Person("hi","go","fe",new Address("aaa")));
-        setOperations.add("set",new Person("hi","go1","fee",new Address("aaaa")));
-        setOperations.add("set1",new Person("hi","go1","fee",new Address("a")));
+        setOperations.add("set",new Person("hi","go","fe",1L,new Address("aaa")));
+        setOperations.add("set",new Person("hi","go1","fee",1L,new Address("aaaa")));
+        setOperations.add("set1",new Person("hi","go1","fee",1L,new Address("a")));
 
         //Person person = setOperations.pop("set");
 
@@ -77,7 +77,7 @@ public class RedisTemplateTest {
 
         Set<Person>personSet = setOperations.members("set");
 
-        Boolean result = setOperations.isMember("set1",new Person("hi","go1","fee",new Address("a")));
+        Boolean result = setOperations.isMember("set1",new Person("hi","go1","fee",1L,new Address("a")));
 
         System.out.println(personSet);
         System.out.println(result);
@@ -90,8 +90,8 @@ public class RedisTemplateTest {
     public void redisZSetTest(){
         ZSetOperations<String,Person>zSetOperations = redisTemplate.opsForZSet();
 
-        zSetOperations.add("set",new Person("no","fu","hogae",new Address("asds")),1);
-        zSetOperations.add("set",new Person("no1","fu","hogae",new Address("asds")),2);
+        zSetOperations.add("set",new Person("no","fu","hogae",1L,new Address("asds")),1);
+        zSetOperations.add("set",new Person("no1","fu","hogae",1L,new Address("asds")),2);
 
         long result = zSetOperations.count("set",0,2);
 
@@ -106,12 +106,12 @@ public class RedisTemplateTest {
         //key, hkey, value
         HashOperations<String,Object,Object>hashOperations = redisTemplate.opsForHash();
 
-        hashOperations.put("hash","test1",new Person("ho1","aa","fu-go",new Address("aa")));
+        hashOperations.put("hash","test1",new Person("ho1","aa","fu-go",1L,new Address("aa")));
 
         Map<String,Person>hash = new HashMap<>();
 
-        hash.put("ho2",new Person("ho2","aa","fu-go",new Address("aaa")));
-        hash.put("ho3",new Person("ho2","aa","fu-go",new Address("aa")));
+        hash.put("ho2",new Person("ho2","aa","fu-go",1L,new Address("aaa")));
+        hash.put("ho3",new Person("ho2","aa","fu-go",1L,new Address("aa")));
 
         hashOperations.putAll("hashAll",hash);
 

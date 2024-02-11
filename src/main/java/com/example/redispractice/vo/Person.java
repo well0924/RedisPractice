@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
+import javax.persistence.Entity;
 import java.io.Serializable;
 
 
@@ -14,7 +16,7 @@ import java.io.Serializable;
 //value 에 값을 넣으면 redis에서 확인을 했을시 키값으로 사용된다.
 //ex) people이면 redis에서는  'people: key 값' 의  형태로 value가 저장이 된다.
 @ToString
-@RedisHash(value = "people")
+@RedisHash(value = "people",timeToLive = 10)
 @Getter
 @NoArgsConstructor
 public class Person implements Serializable {
@@ -22,18 +24,17 @@ public class Person implements Serializable {
     //만약 저장을 할 때 따로 값을 넣어주지 않으면 렌덤의 값으로 들어가게 된다.
     @Id
     private String id;
+    @Indexed
     private String firstName;
     private String lastName;
-
     private Address address;
 
     @Builder
-    public Person(String id,String firstName,String lastName,Address address){
+    public Person(String id,String firstName,String lastName,Long count,Address address){
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.address = address;
     }
-
 
 }
